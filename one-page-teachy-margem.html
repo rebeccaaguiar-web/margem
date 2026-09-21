@@ -1,0 +1,1273 @@
+<title>Triplique sua Margem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Rubik:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --app-bg:#EEF1FA;
+    --ink:#0F1519;
+    --ink-soft:#394255;
+    --muted:#6B7280;
+    --lav:#E6ECFD;
+    --lav-light:#F7F9FE;
+    --brand:#2B5BE8;
+    --brand-deep:#1E40C4;
+    --teal:#4FB8B0;
+    --teal-soft:#E9F6F4;
+    --teal-deep:#27706B;
+    --yellow:#F5C84A;
+    --bar-custo:#8C96F2;
+    --line:#E4E7F2;
+    --line-soft:#F0F2F9;
+    --display:"Quicksand",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --body:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+    /* A4 a 96dpi menos 8mm de margem: 210mm-16mm = 733px, 297mm-16mm = 1062px */
+    --larg-impressao:733px;
+    --escala-impressao:1;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--app-bg);color:var(--ink);
+    font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance}
+  button,input,select{font:inherit;color:inherit}
+
+  .app{
+    display:grid;grid-template-columns:minmax(320px,368px) 1fr;gap:24px;align-items:start;
+    max-width:1460px;margin-inline:auto;padding-inline:16px;padding-block:20px 48px;
+  }
+  @media (max-width:1040px){.app{grid-template-columns:1fr;gap:20px}}
+
+  /* ---------- Painel ---------- */
+  .painel{
+    background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;
+    position:sticky;top:env(safe-area-inset-top,0px);max-height:calc(100vh - 24px);overflow-y:auto;
+  }
+  @media (max-width:1040px){.painel{position:static;max-height:none}}
+  .painel-topo{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .painel h2{font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .painel-sub{color:var(--muted);font-size:12.5px;margin:4px 0 18px}
+
+  fieldset{border:0;padding:0;margin:0 0 18px}
+  legend{
+    font-family:var(--body);font-size:10.5px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--brand);padding:0;margin-bottom:10px;
+  }
+  .campo{margin-bottom:12px}
+  .campo:last-child{margin-bottom:0}
+  .campo label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-soft);margin-bottom:5px}
+  .dica{display:block;font-size:11.5px;font-weight:400;color:var(--muted);margin-top:5px;line-height:1.4}
+  .opcional{font-weight:400;color:var(--muted)}
+
+  input[type=text],input[type=number],select{
+    width:100%;padding:9px 11px;background:var(--lav-light);border:1px solid var(--line);
+    border-radius:9px;font-size:13.5px;font-variant-numeric:tabular-nums;
+  }
+  select{cursor:pointer}
+  input:disabled{opacity:.45;cursor:not-allowed}
+  input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  input[type=file]{width:100%;font-size:12px;color:var(--muted)}
+  input[type=file]::file-selector-button{
+    font:inherit;font-size:12px;font-weight:500;padding:7px 12px;margin-right:10px;
+    background:var(--lav);color:var(--brand-deep);border:0;border-radius:8px;cursor:pointer;
+  }
+
+  .seg-card{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--paper)}
+  .seg-card.desligado{background:var(--lav-light);opacity:.62}
+  .seg-topo{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .seg-topo input[type=checkbox]{width:16px;height:16px;accent-color:var(--brand);cursor:pointer;flex:0 0 auto}
+  .seg-topo label{font-family:var(--display);font-size:14px;font-weight:700;margin:0;cursor:pointer;flex:1}
+  .marca-ajuste{
+    font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    padding:3px 7px;border-radius:999px;background:var(--teal-soft);color:var(--teal-deep);
+  }
+  .seg-grade{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .seg-grade .largo{grid-column:1 / -1}
+  .seg-grade label{font-size:11.5px;margin-bottom:4px}
+  .seg-grade input,.seg-grade select{padding:7px 9px;font-size:12.5px}
+  .sub-bloco{grid-column:1 / -1;border-top:1px solid var(--line-soft);padding-top:9px;margin-top:2px}
+  .sub-titulo{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--brand);margin-bottom:7px}
+  .ref{display:flex;align-items:baseline;justify-content:space-between;gap:6px;font-size:11px;color:var(--muted);margin-top:4px}
+  .link-btn{
+    background:none;border:0;padding:0;cursor:pointer;
+    font-size:11px;font-weight:500;color:var(--brand-deep);text-decoration:underline;
+  }
+  .acao-linha{display:flex;justify-content:flex-end;margin-top:7px}
+
+  .logo-status{display:none;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:7px 10px;background:var(--teal-soft);border-radius:8px;font-size:12px;color:var(--ink-soft)}
+  .logo-status.ativo{display:flex}
+  .caixas{display:flex;flex-wrap:wrap;gap:8px 14px}
+  .caixa{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
+  .caixa input{width:15px;height:15px;accent-color:var(--brand);cursor:pointer}
+
+  .aviso{display:none;margin-top:9px;padding:9px 11px;background:#FFF6E3;border-radius:9px;font-size:11.5px;color:#8A6410;line-height:1.4}
+  .aviso.ativo{display:block}
+
+  .acoes{display:flex;gap:8px;border-top:1px solid var(--line-soft);padding-block-start:16px}
+  .btn{flex:1;padding:11px 14px;border:0;border-radius:10px;cursor:pointer;font-family:var(--display);font-size:14px;font-weight:700}
+  .btn-primario{background:var(--brand);color:#fff}
+  .btn-primario:hover{background:var(--brand-deep)}
+  .btn-secundario{flex:0 0 auto;background:var(--lav);color:var(--brand-deep)}
+  .btn-secundario:hover{background:#DAE2FB}
+
+  /* ---------- Folha ---------- */
+  .folha-area{display:flex;justify-content:center;min-width:0}
+  .folha{
+    width:100%;max-width:860px;background:var(--paper);border-radius:16px;
+    box-shadow:0 1px 2px rgba(15,21,25,.06),0 12px 32px rgba(15,21,25,.09);
+    overflow:hidden;container-type:inline-size;
+  }
+  .folha.medindo{position:fixed;left:-10000px;top:0;width:var(--larg-impressao);max-width:none;box-shadow:none}
+  .folha-interna{padding:26px 36px 0}
+  @container (max-width:560px){.folha-interna{padding:22px 18px 0}}
+
+  .cabecalho{display:flex;align-items:center;gap:20px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+  .marca-teachy{height:36px;width:auto;flex:0 0 auto;order:2}
+  .escola{display:flex;align-items:center;gap:14px;min-width:0;order:1;margin-right:auto}
+  #logo-escola{display:none;max-height:64px;max-width:210px;object-fit:contain;flex:0 0 auto}
+  #logo-escola.ativo{display:block}
+  .escola-nome{font-size:19px;font-weight:700;letter-spacing:-.015em;line-height:1.25;overflow-wrap:anywhere;font-family:var(--display)}
+
+  .chamada{padding-block:16px 14px}
+  .chamada h1{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.12;max-width:20ch}
+  @container (max-width:560px){.chamada h1{font-size:27px}}
+  .chamada h1 em{font-style:normal;color:var(--brand)}
+  .chamada p{margin:10px 0 0;color:var(--muted);font-size:14px;max-width:62ch;line-height:1.5}
+  .chamada p strong{color:var(--ink);font-weight:600}
+
+  /* Faixa da margem */
+  .margem{
+    margin-top:4px;background:var(--brand);border-radius:14px;color:#fff;padding:16px 20px;
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  }
+  .margem-multi{display:flex;align-items:baseline;gap:9px;flex:0 0 auto}
+  .margem-numero{font-family:var(--display);font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+  @container (max-width:560px){.margem-numero{font-size:42px}}
+  .margem-legenda{font-family:var(--display);font-size:15px;font-weight:600;line-height:1.2;max-width:9ch;color:#DCE4FC}
+  .margem-lado{display:flex;gap:18px;flex:1 1 auto;justify-content:flex-end;flex-wrap:wrap}
+  .margem-lado div{display:flex;flex-direction:column;gap:3px;padding-left:16px;border-left:1px solid rgba(255,255,255,.28)}
+  .margem-lado span{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#C7D4FB}
+  .margem-lado strong{font-family:var(--display);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .margem-lado .ganho strong{color:#A9E4DF}
+
+  /* De → para */
+  .depara{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    margin-top:12px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;
+  }
+  .depara-rotulo{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);flex:1 1 100%}
+  .depara-de{font-family:var(--display);font-size:22px;font-weight:700;color:var(--muted);text-decoration:line-through;text-decoration-thickness:2px;font-variant-numeric:tabular-nums}
+  .depara-seta{color:var(--muted);font-size:18px}
+  .depara-para{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .depara-chip{
+    margin-left:auto;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:var(--teal-soft);color:var(--teal-deep);white-space:nowrap;
+  }
+
+  /* Gráfico */
+  .grafico-bloco{background:var(--lav-light);border:1px solid var(--line-soft);border-radius:14px;padding:13px 16px 10px;margin-top:12px}
+  .grafico-titulo{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .grafico-titulo h2{font-size:15px;font-weight:700}
+  .grafico-titulo span{font-size:11.5px;color:var(--muted)}
+  #grafico{display:block;width:100%;height:auto;max-height:240px}
+  .legenda{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin-top:7px;padding-top:8px;border-top:1px solid var(--line-soft)}
+  .legenda div{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-soft)}
+  .swatch{width:13px;height:13px;border-radius:3px;flex:0 0 auto}
+  .vazio{padding:36px 12px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* A escola escolhe o que imprime */
+  .escolha{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:13px 16px}
+  .escolha h3{font-size:14px;font-weight:700}
+  .escolha > p{margin:4px 0 10px;font-size:12px;color:var(--muted);max-width:70ch;line-height:1.45}
+  .escolha-tabela{width:100%;border-collapse:separate;border-spacing:0 3px;font-variant-numeric:tabular-nums}
+  .escolha-tabela td{padding:7px 10px;font-size:12.5px}
+  .escolha-tabela .opcao{font-weight:500}
+  .escolha-tabela .pags{text-align:right;color:var(--muted);font-size:11.5px;white-space:nowrap}
+  .escolha-tabela .valor{text-align:right;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+  .escolha-tabela tr.atual td{background:var(--lav)}
+  .escolha-tabela tr.atual td:first-child{border-radius:8px 0 0 8px}
+  .escolha-tabela tr.atual td:last-child{border-radius:0 8px 8px 0}
+  .escolha-tabela .aqui{font-weight:400;font-size:10.5px;color:var(--brand-deep)}
+
+  .minis{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center}
+  .mini{
+    flex:0 1 calc((100% - 20px) / 3);max-width:calc((100% - 20px) / 3);
+    border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px;background:var(--paper);
+  }
+  @container (max-width:560px){.mini{flex-basis:100%;max-width:none}}
+  .mini h4{font-family:var(--display);font-size:12px;font-weight:700;margin:0}
+  .mini .mini-nota{font-size:10.5px;color:var(--muted);margin:1px 0 4px}
+  .mini svg{display:block;width:100%;height:auto}
+
+  .impacto{margin-top:12px}
+  .impacto h3{font-size:13px;font-weight:700;margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+  th,td{padding:5px 9px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  tbody td,tbody th{border-bottom:1px solid var(--line-soft);font-weight:400}
+  tbody th{font-weight:500}
+  tfoot td{font-weight:600;padding-top:8px}
+  tfoot .total{color:var(--brand-deep);font-family:var(--display);font-size:15px;font-weight:700}
+
+  .rodape-nota{font-size:10px;color:var(--muted);line-height:1.5;margin:12px 0 0;padding-top:8px;border-top:1px solid var(--line-soft)}
+  .assinatura{margin-top:14px;background:var(--brand);color:#fff;padding:15px 36px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  @container (max-width:560px){.assinatura{padding:15px 18px}}
+  .assinatura-frase{font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .assinatura-frase::after{content:"";display:block;width:44px;height:3px;border-radius:2px;background:var(--yellow);margin-top:8px}
+  .assinatura-equipe{font-family:var(--display);font-size:15px;font-weight:600;color:#A9E4DF}
+
+  /* Referência interna */
+  .ref-tabela{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  .ref-tabela th,.ref-tabela td{padding:4px 5px;text-align:right;border-bottom:1px solid var(--line-soft);font-size:11.5px}
+  .ref-tabela th:first-child,.ref-tabela td:first-child{text-align:left}
+  .ref-tabela thead th{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand-deep);font-weight:600}
+  .ref-tabela tbody th{font-weight:500;color:var(--ink-soft)}
+
+  @media print{
+    @page{size:A4 portrait;margin:8mm}
+    body{background:#fff}
+    .app{display:block;max-width:none;margin:0;padding:0}
+    .painel{display:none}
+    .folha-area{display:block}
+    /* zoom, e não transform: o zoom reduz a caixa de layout de verdade, então a
+       paginação da impressora enxerga a altura já reduzida. Com transform a caixa
+       continuava do tamanho original e dependia de um container recortado. */
+    .folha{
+      width:var(--larg-impressao);max-width:none;box-shadow:none;
+      zoom:var(--escala-impressao);
+    }
+    .grafico-bloco,.liberdade,.margem,.depara,.assinatura{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside class="painel">
+    <div class="painel-topo">
+      <h2>Dados da escola</h2>
+      <span class="depara-chip" style="margin:0">Uso interno</span>
+    </div>
+    <p class="painel-sub">O One Page ao lado se atualiza a cada mudança. O nome do sistema de ensino nunca aparece na peça.</p>
+
+    <fieldset>
+      <legend>Identificação</legend>
+      <div class="campo">
+        <label for="f-escola">Nome da escola</label>
+        <input type="text" id="f-escola" value="Colégio Modelo" placeholder="Ex.: Colégio São Bento">
+      </div>
+      <div class="campo">
+        <label for="f-logo">Logo <span class="opcional">(opcional)</span></label>
+        <input type="file" id="f-logo" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+        <div class="logo-status" id="logo-status">
+          <span>Logo aplicada</span>
+          <button type="button" class="link-btn" id="btn-remover-logo">Remover</button>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="f-inep">Código INEP <span class="opcional">(opcional)</span></label>
+        <input type="text" id="f-inep" inputmode="numeric" placeholder="Ex.: 33012345">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Segmentos</legend>
+      <div id="cartoes-segmento"></div>
+      <div class="acao-linha">
+        <button type="button" class="link-btn" id="btn-replicar">replicar o cenário do Fund. I nos demais</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Composição do gráfico</legend>
+      <div class="campo">
+        <label for="f-principal">Escopo do gráfico</label>
+        <select id="f-principal"></select>
+      </div>
+      <div class="campo">
+        <label>Gráficos por segmento no fim da peça <span class="opcional">(opcional)</span></label>
+        <div class="caixas" id="caixas-mini"></div>
+        <span class="dica">Entram depois da tabela. O segmento já usado no gráfico principal é omitido, e a tabela por segmento sai para a peça não estourar a página.</span>
+      </div>
+      <div class="aviso" id="aviso-preco">Informe o preço cobrado das famílias para a peça mostrar a margem.</div>
+      <div class="aviso" id="aviso-segmento">Selecione ao menos um segmento.</div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Referência interna</legend>
+      <table class="ref-tabela" id="ref-tabela"></table>
+      <span class="dica">Não aparece no One Page. Páginas de referência de um material completo por segmento — a escola pode definir mais ou menos.</span>
+    </fieldset>
+
+    <div class="aviso" id="aviso-impressao">
+      Este navegador bloqueou a impressão nesta página. Baixe o arquivo HTML, abra direto no
+      navegador e use <strong>Ctrl+P → Salvar como PDF</strong>.
+    </div>
+
+    <div class="acoes">
+      <button type="button" class="btn btn-primario" id="btn-pdf">Exportar PDF</button>
+      <button type="button" class="btn btn-secundario" id="btn-limpar">Limpar</button>
+    </div>
+  </aside>
+
+  <main class="folha-area">
+    <article class="folha">
+      <div class="folha-interna">
+        <header class="cabecalho">
+          <img class="marca-teachy" src="data:image/png;base64,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" alt="Teachy">
+          <div class="escola">
+            <img id="logo-escola" alt="">
+            <span class="escola-nome" id="saida-escola">Colégio Modelo</span>
+          </div>
+        </header>
+
+        <section class="chamada">
+          <h1 id="saida-titulo">Triplique a margem da sua escola com <em>material próprio</em>.</h1>
+          <p id="saida-subtitulo"></p>
+        </section>
+
+        <section class="margem">
+          <div class="margem-multi">
+            <span class="margem-numero" id="saida-multi">—</span>
+            <span class="margem-legenda" id="saida-multi-legenda">a margem de hoje</span>
+          </div>
+          <div class="margem-lado" id="margem-lado" hidden>
+            <div><span>Margem hoje</span><strong id="saida-margem-hoje">—</strong></div>
+            <div class="ganho"><span id="saida-margem-depois-rotulo">Com material próprio</span><strong id="saida-margem-depois">—</strong></div>
+          </div>
+        </section>
+
+        <section class="depara">
+          <div class="depara-rotulo">Custo do material por aluno/ano</div>
+          <span class="depara-de" id="saida-custo-de">—</span>
+          <span class="depara-seta" aria-hidden="true">→</span>
+          <span class="depara-para" id="saida-custo-para">—</span>
+          <span class="depara-chip" id="saida-custo-chip">—</span>
+        </section>
+
+        <section class="grafico-bloco">
+          <div class="grafico-titulo">
+            <h2>Para onde vai o que a família paga</h2>
+            <span id="saida-grafico-nota"></span>
+          </div>
+          <svg id="grafico" role="img"></svg>
+          <div class="vazio" id="grafico-vazio" hidden>Selecione ao menos um segmento no painel.</div>
+          <div class="legenda" id="legenda"></div>
+        </section>
+
+        <section class="escolha">
+          <h3>A escola decide o que vai para o papel</h3>
+          <p id="saida-escolha-texto">O material é da escola — conteúdo, identidade e formato. Imprimir é opcional, e o custo acompanha exatamente o que ela escolher levar para o papel.</p>
+          <table class="escolha-tabela" id="tabela-escolha"></table>
+        </section>
+
+        <section class="impacto" id="bloco-impacto">
+          <h3>Margem anual por segmento</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Segmento</th>
+                <th scope="col">Alunos</th>
+                <th scope="col">Margem hoje</th>
+                <th scope="col">Com material próprio</th>
+                <th scope="col">A mais no ano</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-impacto"></tbody>
+            <tfoot id="rodape-impacto"></tfoot>
+          </table>
+        </section>
+
+        <section class="minis" id="bloco-minis" hidden></section>
+
+        <p class="rodape-nota" id="saida-nota"></p>
+      </div>
+
+      <footer class="assinatura">
+        <div class="assinatura-frase">Vamos desenhar o material da sua escola?</div>
+        <div class="assinatura-equipe">Equipe Teachy</div>
+      </footer>
+    </article>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SEGMENTOS = [
+    {id:"EFAI", nome:"Fundamental I",  curto:"Fund. I"},
+    {id:"EFAF", nome:"Fundamental II", curto:"Fund. II"},
+    {id:"EM",   nome:"Ensino Médio",   curto:"Médio"}
+  ];
+
+  // Versões do material da escola: mesma obra, com ou sem as subseções de exercícios.
+  // São ponto de partida — a paginação final é decisão da escola.
+  var VERSOES = [
+    {id:"completa", rotulo:"Completa", descricao:"todas as seções",
+     paginas:{EFAI:1220, EFAF:2220, EM:4180}},
+    {id:"semex", rotulo:"Sem subseção de exercícios", descricao:"exercícios na plataforma",
+     paginas:{EFAI:1013, EFAF:1888, EM:3352}}
+  ];
+  var PAGINAS_REF = VERSOES[0].paginas;
+
+  var MATERIAIS = [
+    {id:"bernoulli", nome:"Bernoulli",   v:{EFAI:663.96,  EFAF:814.00,  EM:990.00}},
+    {id:"sas",       nome:"SAS",         v:{EFAI:1058.34, EFAF:1590.80, EM:2049.51}},
+    {id:"poliedro",  nome:"Poliedro",    v:{EFAI:1068.10, EFAF:1249.60, EM:1912.17}},
+    {id:"positivo",  nome:"Positivo",    v:{EFAI:768.46,  EFAF:866.91,  EM:1208.90}},
+    {id:"anglo",     nome:"Anglo",       v:{EFAI:618.53,  EFAF:824.38,  EM:1179.73}},
+    {id:"coc",       nome:"COC",         v:{EFAI:779.90,  EFAF:961.40,  EM:1667.23}},
+    {id:"ph",        nome:"pH",          v:{EFAI:680.40,  EFAF:870.23,  EM:1482.14}},
+    {id:"pitagoras", nome:"Pitágoras",   v:{EFAI:731.49,  EFAF:858.95,  EM:1161.17}},
+    {id:"etico",     nome:"Ético",       v:{EFAI:581.79,  EFAF:654.56,  EM:1070.34}},
+    {id:"pueri",     nome:"Pueri Domus", v:{EFAI:1359.60, EFAF:1675.30, EM:1813.17}},
+    {id:"sae",       nome:"SAE Digital", v:{EFAI:549.89,  EFAF:692.89,  EM:821.22}},
+    {id:"ftd",       nome:"FTD",         v:{EFAI:605.00,  EFAF:924.00,  EM:1320.00}},
+    {id:"eleva",     nome:"Eleva",       v:{EFAI:781.00,  EFAF:935.00,  EM:1393.33}},
+    {id:"etapa",     nome:"Etapa",       v:{EFAI:997.92,  EFAF:1374.91, EM:1867.54}},
+    {id:"uno",       nome:"UNO",         v:{EFAI:649.00,  EFAF:649.00,  EM:913.00}}
+  ];
+
+  // O que a escola decide é QUANTO imprimir — não quem imprime.
+  var FORMATOS = [
+    {id:"impresso", rotulo:"Com material impresso"},
+    {id:"digital",  rotulo:"Só digital"}
+  ];
+
+  // Preço inicial às famílias = custo do material + 20%. É só ponto de partida:
+  // trocar o material depois não mexe no preço, que é número real da escola.
+  var MARKUP_PADRAO = 1.20;
+  var PADRAO = {
+    EFAI:{material:"sas", alunos:180, volumes:7},
+    EFAF:{material:"sas", alunos:150, volumes:7},
+    EM:  {material:"sas", alunos:120, volumes:13}
+  };
+  var PRECO_PAGINA_PADRAO = "0.10";
+  var PRECO_CAPA_PADRAO = "5.00";
+
+  var moeda = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+  var moedaCurta = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+  var numero = new Intl.NumberFormat("pt-BR");
+  var SVG_NS = "http://www.w3.org/2000/svg";
+
+  var ajustado = {EFAI:false, EFAF:false, EM:false};
+
+  function $(id){ return document.getElementById(id); }
+  function numeroDe(el, padrao){
+    if (!el) return padrao;
+    var n = parseFloat(String(el.value).replace(",","."));
+    return isFinite(n) && n >= 0 ? n : padrao;
+  }
+  function materialPorId(id){
+    for (var i=0;i<MATERIAIS.length;i++){ if (MATERIAIS[i].id === id) return MATERIAIS[i]; }
+    return null;
+  }
+  function segmentoPorId(id){
+    for (var i=0;i<SEGMENTOS.length;i++){ if (SEGMENTOS[i].id === id) return SEGMENTOS[i]; }
+    return SEGMENTOS[0];
+  }
+  function referenciaDe(segId){
+    var m = materialPorId($("m-" + segId).value);
+    return m ? m.v[segId] : null;
+  }
+  function versaoDe(segId){
+    var pg = Math.round(numeroDe($("pg-" + segId), 0));
+    for (var i = 0; i < VERSOES.length; i++){
+      if (VERSOES[i].paginas[segId] === pg) return VERSOES[i].id;
+    }
+    return "custom";
+  }
+
+  /* ---------- Painel ---------- */
+  (function montarPainel(){
+    var host = $("cartoes-segmento");
+    SEGMENTOS.forEach(function(seg){
+      var padrao = PADRAO[seg.id];
+      var card = document.createElement("div");
+      card.className = "seg-card";
+      card.id = "card-" + seg.id;
+
+      var opcoesMaterial = MATERIAIS.map(function(m){
+        return '<option value="' + m.id + '"' + (m.id === padrao.material ? " selected" : "") + ">" + m.nome + "</option>";
+      }).join("") + '<option value="custom">Outro / valor informado</option>';
+
+      var opcoesFormato = FORMATOS.map(function(f){
+        return '<option value="' + f.id + '">' + f.rotulo + "</option>";
+      }).join("");
+
+      var matPadrao = materialPorId(padrao.material);
+      var precoPadrao = matPadrao ? (matPadrao.v[seg.id] * MARKUP_PADRAO).toFixed(2) : "";
+
+      card.innerHTML =
+        '<div class="seg-topo">' +
+          '<input type="checkbox" id="on-' + seg.id + '" checked>' +
+          '<label for="on-' + seg.id + '">' + seg.nome + '</label>' +
+          '<span class="marca-ajuste" id="chip-' + seg.id + '" hidden>ajustado</span>' +
+        '</div>' +
+        '<div class="seg-grade">' +
+          '<div class="largo">' +
+            '<label for="m-' + seg.id + '">Material didático atual</label>' +
+            '<select id="m-' + seg.id + '">' + opcoesMaterial + '</select>' +
+          '</div>' +
+          '<div>' +
+            '<label for="c-' + seg.id + '">Custo hoje (R$/aluno)</label>' +
+            '<input type="number" id="c-' + seg.id + '" min="0" step="0.01">' +
+          '</div>' +
+          '<div>' +
+            '<label for="a-' + seg.id + '">Alunos</label>' +
+            '<input type="number" id="a-' + seg.id + '" min="0" step="1" value="' + padrao.alunos + '">' +
+          '</div>' +
+          '<div class="largo ref">' +
+            '<span id="ref-' + seg.id + '"></span>' +
+            '<button type="button" class="link-btn" id="reset-' + seg.id + '" hidden>restaurar referência</button>' +
+          '</div>' +
+
+          '<div class="sub-bloco">' +
+            '<div class="sub-titulo">Preço cobrado das famílias</div>' +
+            '<div class="seg-grade">' +
+              '<div>' +
+                '<label for="ph-' + seg.id + '">Hoje (R$/aluno)</label>' +
+                '<input type="number" id="ph-' + seg.id + '" min="0" step="0.01" value="' + precoPadrao + '">' +
+              '</div>' +
+              '<div>' +
+                '<label for="pn-' + seg.id + '">Proposto <span class="opcional">(opc.)</span></label>' +
+                '<input type="number" id="pn-' + seg.id + '" min="0" step="0.01" placeholder="material exclusivo">' +
+              '</div>' +
+              '<span class="dica largo">Começa no custo do material + 20%. Troque pelo valor real cobrado pela escola.</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="sub-bloco">' +
+            '<div class="sub-titulo">Cenário com material próprio</div>' +
+            '<div class="seg-grade">' +
+              '<div class="largo">' +
+                '<label for="f-' + seg.id + '">Formato escolhido pela escola</label>' +
+                '<select id="f-' + seg.id + '">' + opcoesFormato + '</select>' +
+              '</div>' +
+              '<div>' +
+                '<label for="mens-' + seg.id + '">Plataforma (R$/mês)</label>' +
+                '<input type="number" id="mens-' + seg.id + '" min="0" step="0.01" value="29.90">' +
+              '</div>' +
+              '<div>' +
+                '<label for="pag-' + seg.id + '">Miolo (R$/pág)</label>' +
+                '<input type="number" id="pag-' + seg.id + '" min="0" step="0.01" value="' + PRECO_PAGINA_PADRAO + '">' +
+              '</div>' +
+              '<div>' +
+                '<label for="capa-' + seg.id + '">Capa (R$/un)</label>' +
+                '<input type="number" id="capa-' + seg.id + '" min="0" step="0.01" value="' + PRECO_CAPA_PADRAO + '">' +
+              '</div>' +
+              '<div>' +
+                '<label for="vol-' + seg.id + '">Volumes</label>' +
+                '<input type="number" id="vol-' + seg.id + '" min="0" step="1" value="' + padrao.volumes + '">' +
+              '</div>' +
+              '<div class="largo">' +
+                '<label for="ver-' + seg.id + '">Versão do material</label>' +
+                '<select id="ver-' + seg.id + '">' +
+                  VERSOES.map(function(v){
+                    return '<option value="' + v.id + '">' + v.rotulo + " · " + v.descricao + "</option>";
+                  }).join("") +
+                  '<option value="custom">Paginação personalizada</option>' +
+                '</select>' +
+              '</div>' +
+              '<div class="largo">' +
+                '<label for="pg-' + seg.id + '">Páginas do material</label>' +
+                '<input type="number" id="pg-' + seg.id + '" min="0" step="10" value="' + PAGINAS_REF[seg.id] + '">' +
+                '<span class="dica" id="custo-' + seg.id + '"></span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      host.appendChild(card);
+    });
+
+    var minis = $("caixas-mini");
+    SEGMENTOS.forEach(function(seg){
+      var l = document.createElement("label");
+      l.className = "caixa";
+      l.innerHTML = '<input type="checkbox" id="mini-' + seg.id + '">' + seg.curto;
+      minis.appendChild(l);
+    });
+
+    $("ref-tabela").innerHTML =
+      "<thead><tr><th>Segmento</th><th>Páginas ref.</th><th>Custo em uso</th></tr></thead><tbody>" +
+      SEGMENTOS.map(function(s){
+        return '<tr><th scope="row">' + s.curto + "</th>" +
+          "<td>" + numero.format(PAGINAS_REF[s.id]) + "</td>" +
+          '<td id="reftab-' + s.id + '"></td></tr>';
+      }).join("") + "</tbody>";
+  })();
+
+  function segmentosAtivos(){
+    return SEGMENTOS.filter(function(s){ return $("on-" + s.id).checked; });
+  }
+
+  function atualizarPrincipal(){
+    var sel = $("f-principal");
+    var anterior = sel.value || "media";
+    var ativos = segmentosAtivos();
+    sel.innerHTML = "";
+    var oMedia = document.createElement("option");
+    oMedia.value = "media"; oMedia.textContent = "Todos os segmentos (média)";
+    sel.appendChild(oMedia);
+    ativos.forEach(function(s){
+      var o = document.createElement("option");
+      o.value = s.id; o.textContent = "Somente " + s.nome;
+      sel.appendChild(o);
+    });
+    var valido = anterior === "media" || ativos.some(function(s){ return s.id === anterior; });
+    sel.value = valido ? anterior : "media";
+  }
+
+  /* ---------- Dados ---------- */
+  function dadosSegmento(segId){
+    var formato = $("f-" + segId).value;
+    var licenca = numeroDe($("mens-" + segId), 29.90) * 12;
+    var precoPagina = numeroDe($("pag-" + segId), 0.12);
+    // "Brutas" sobrevivem à escolha do formato: é o material que a escola tem para
+    // imprimir, e alimenta o quadro de cenários da peça.
+    var paginasBrutas = Math.round(numeroDe($("pg-" + segId), 0));
+    var volumes = Math.round(numeroDe($("vol-" + segId), 0));
+    var precoCapa = numeroDe($("capa-" + segId), 5);
+    var mioloBruto = paginasBrutas * precoPagina;
+    var capasBrutas = volumes * precoCapa;
+    var paginas = formato === "digital" ? 0 : paginasBrutas;
+    var miolo = formato === "digital" ? 0 : mioloBruto;
+    var capas = formato === "digital" ? 0 : capasBrutas;
+    var impressao = miolo + capas;
+    var precoHoje = numeroDe($("ph-" + segId), 0);
+    var precoNovo = numeroDe($("pn-" + segId), 0);
+    return {
+      id:segId, nome:segmentoPorId(segId).nome, curto:segmentoPorId(segId).curto,
+      custo: numeroDe($("c-" + segId), 0),
+      precoHoje: precoHoje,
+      precoNovo: precoNovo > 0 ? precoNovo : precoHoje,
+      subiuPreco: precoNovo > 0 && precoNovo !== precoHoje,
+      alunos: Math.round(numeroDe($("a-" + segId), 0)),
+      formato: formato,
+      licenca: licenca, precoPagina: precoPagina, precoCapa: precoCapa,
+      paginas: paginas, paginasBrutas: paginasBrutas,
+      volumes: volumes,
+      miolo: miolo, mioloBruto: mioloBruto,
+      capas: capas, capasBrutas: capasBrutas,
+      impressao: impressao,
+      teachy: licenca + impressao,
+      ajustado: ajustado[segId]
+    };
+  }
+
+  function agregar(lista){
+    var totalAlunos = lista.reduce(function(s,d){ return s + d.alunos; }, 0);
+    var pesos = lista.map(function(d){ return totalAlunos > 0 ? d.alunos / totalAlunos : 1 / lista.length; });
+    var media = function(pegar){
+      return lista.reduce(function(s,d,i){ return s + pegar(d) * pesos[i]; }, 0);
+    };
+    var licenca = media(function(d){ return d.licenca; });
+    var impressao = media(function(d){ return d.impressao; });
+    var formatos = {};
+    lista.forEach(function(d){ formatos[d.formato] = true; });
+    var unicos = Object.keys(formatos);
+    return {
+      id:"media", nome:"Todos os segmentos",
+      custo: media(function(d){ return d.custo; }),
+      precoHoje: media(function(d){ return d.precoHoje; }),
+      precoNovo: media(function(d){ return d.precoNovo; }),
+      subiuPreco: lista.some(function(d){ return d.subiuPreco; }),
+      alunos: totalAlunos,
+      ponderada: totalAlunos > 0,
+      formato: unicos.length === 1 ? unicos[0] : "misto",
+      licenca: licenca, impressao: impressao,
+      paginas: media(function(d){ return d.paginas; }),
+      paginasBrutas: media(function(d){ return d.paginasBrutas; }),
+      volumes: media(function(d){ return d.volumes; }),
+      precoPagina: media(function(d){ return d.precoPagina; }),
+      precoCapa: media(function(d){ return d.precoCapa; }),
+      miolo: media(function(d){ return d.miolo; }),
+      mioloBruto: media(function(d){ return d.mioloBruto; }),
+      capas: media(function(d){ return d.capas; }),
+      capasBrutas: media(function(d){ return d.capasBrutas; }),
+      teachy: licenca + impressao
+    };
+  }
+
+  /* ---------- Gráfico ---------- */
+  function svgEl(tag, attrs){
+    var el = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs){ if (Object.prototype.hasOwnProperty.call(attrs,k)) el.setAttribute(k, attrs[k]); }
+    return el;
+  }
+  function texto(pai, x, y, conteudo, opcoes){
+    var o = opcoes || {};
+    var t = svgEl("text",{
+      x:x, y:y, "text-anchor": o.ancora || "middle",
+      "font-family": o.familia || '"Rubik",system-ui,sans-serif',
+      "font-size": o.tamanho || 12, "font-weight": o.peso || 400, fill: o.cor || "#0F1519"
+    });
+    t.textContent = conteudo;
+    pai.appendChild(t);
+    return t;
+  }
+
+  var contador = 0;
+
+  function desenharGrafico(svg, cenarios, compacto){
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (!cenarios.length) return;
+
+    var margemEsq = compacto ? 58 : 64, margemDir = compacto ? 12 : 22;
+    var topo = compacto ? 24 : 30, baseAltura = compacto ? 104 : 178;
+    var larguraBarra = compacto ? 46 : 96, vaoGrupo = compacto ? 20 : 52;
+    var alturaRotulo = compacto ? 30 : 42;
+    var limiar = compacto ? 15 : 22;
+    var largura = margemEsq + cenarios.length * larguraBarra + (cenarios.length - 1) * vaoGrupo + margemDir;
+    var base = topo + baseAltura;
+    var altura = base + alturaRotulo;
+
+    svg.setAttribute("viewBox", "0 0 " + largura + " " + altura);
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    var idHachura = "hachura-" + (++contador);
+    var defs = svgEl("defs",{});
+    var padrao = svgEl("pattern",{id:idHachura, patternUnits:"userSpaceOnUse", width:8, height:8, patternTransform:"rotate(45)"});
+    padrao.appendChild(svgEl("rect",{width:8,height:8,fill:"#E9F6F4"}));
+    padrao.appendChild(svgEl("line",{x1:0,y1:0,x2:0,y2:8,stroke:"#4FB8B0","stroke-width":3.2}));
+    defs.appendChild(padrao);
+    svg.appendChild(defs);
+
+    var maximo = 0;
+    cenarios.forEach(function(c){ maximo = Math.max(maximo, c.total); });
+    if (maximo <= 0) maximo = 100;
+    var passo = Math.pow(10, Math.floor(Math.log(maximo) / Math.LN10 - 0.4));
+    var topoEscala = Math.ceil(maximo * 1.1 / passo) * passo;
+    var y = function(v){ return base - (v / topoEscala) * baseAltura; };
+
+    var linhas = compacto ? 2 : 4;
+    for (var i = 0; i <= linhas; i++){
+      var valor = topoEscala * i / linhas;
+      var py = y(valor);
+      svg.appendChild(svgEl("line",{
+        x1:margemEsq - 8, y1:py, x2:largura - margemDir, y2:py,
+        stroke: i === 0 ? "#C9CEE0" : "#E4E7F2", "stroke-width": i === 0 ? 1.2 : 1
+      }));
+      texto(svg, margemEsq - 12, py + 4, moedaCurta.format(valor),
+        {ancora:"end", tamanho: compacto ? 9.5 : 11, cor:"#6B7280"});
+    }
+
+    cenarios.forEach(function(cenario, indice){
+      var x = margemEsq + indice * (larguraBarra + vaoGrupo);
+      var yTopo = y(cenario.total);
+
+      var corte = svgEl("clipPath",{id:"corte-" + contador + "-" + indice});
+      corte.appendChild(svgEl("rect",{
+        x:x, y:yTopo, width:larguraBarra, height:Math.max(base - yTopo,1), rx:5
+      }));
+      defs.appendChild(corte);
+      var grupo = svgEl("g",{"clip-path":"url(#corte-" + contador + "-" + indice + ")"});
+      svg.appendChild(grupo);
+
+      var yPilha = base, emendas = [];
+      cenario.partes.forEach(function(parte, iParte){
+        if (parte.valor <= 0) return;
+        var h = (parte.valor / topoEscala) * baseAltura;
+        var yParte = yPilha - h;
+        grupo.appendChild(svgEl("rect",{
+          x:x, y:yParte, width:larguraBarra, height:Math.max(h,1),
+          fill: parte.hachura ? "url(#" + idHachura + ")" : parte.cor
+        }));
+        if (h >= limiar){
+          texto(svg, x + larguraBarra/2, yParte + h/2 + (compacto ? 4 : 5), moedaCurta.format(parte.valor),
+            {tamanho: compacto ? 10 : 13, peso:600, cor:parte.corTexto});
+        }
+        if (iParte > 0) emendas.push(yPilha);
+        yPilha = yParte;
+      });
+      emendas.forEach(function(ye){
+        grupo.appendChild(svgEl("line",{x1:x, y1:ye, x2:x + larguraBarra, y2:ye, stroke:"#FFFFFF", "stroke-width":1.4}));
+      });
+
+      texto(svg, x + larguraBarra/2, yTopo - (compacto ? 6 : 9), moedaCurta.format(cenario.total),
+        {tamanho: compacto ? 10 : 11.5, peso:600, cor:"#6B7280"});
+
+      var centro = x + larguraBarra/2;
+      if (compacto){
+        // nome quebrado em duas linhas: a barra pequena não comporta a frase inteira
+        var palavras = (cenario.tituloCurto || cenario.titulo).split(" ");
+        var ultima = palavras.length > 1 ? palavras.pop() : "";
+        texto(svg, centro, base + 13, palavras.join(" "),
+          {tamanho:10, peso:700, familia:'"Quicksand",sans-serif'});
+        if (ultima){
+          texto(svg, centro, base + 24, ultima, {tamanho:10, peso:700, familia:'"Quicksand",sans-serif'});
+        }
+      } else {
+        texto(svg, centro, base + 19, cenario.titulo,
+          {tamanho:13, peso:700, familia:'"Quicksand",sans-serif'});
+        if (cenario.detalhe){
+          texto(svg, centro, base + 34, cenario.detalhe, {tamanho:10.5, cor:"#6B7280"});
+        }
+      }
+    });
+
+    svg.setAttribute("aria-label", cenarios.map(function(c){
+      return c.titulo + ": custo " + moeda.format(c.partes[0].valor);
+    }).join("; "));
+  }
+
+  function desenharLegenda(temImpressao, temMargem){
+    var legenda = $("legenda");
+    legenda.innerHTML = "";
+    var itens = [
+      {cor:"#8C96F2", texto:"Custo do material hoje"},
+      {cor:"#2F57D6", texto:"Plataforma Teachy"}
+    ];
+    if (temImpressao) itens.push({cor:"#A8BCF8", texto:"Impressão"});
+    if (temMargem) itens.push({cor:"hachura", texto:"Margem que fica na escola"});
+    itens.forEach(function(item){
+      var div = document.createElement("div");
+      var sw = document.createElement("span");
+      sw.className = "swatch";
+      if (item.cor === "hachura"){
+        sw.style.background = "repeating-linear-gradient(45deg,#4FB8B0 0 3px,#E9F6F4 3px 6px)";
+        sw.style.border = "1px solid #4FB8B0";
+      } else {
+        sw.style.background = item.cor;
+      }
+      div.appendChild(sw);
+      div.appendChild(document.createTextNode(item.texto));
+      legenda.appendChild(div);
+    });
+  }
+
+  // O verbo do título segue o múltiplo exibido, arredondado como se lê: 3,9x é
+  // "Quadruplique", 3,2x é "Triplique". Acima de 9x volta ao genérico.
+  var VERBOS = {2:"Dobre", 3:"Triplique", 4:"Quadruplique", 5:"Quintuplique", 6:"Sextuplique",
+                7:"Multiplique por 7", 8:"Multiplique por 8", 9:"Multiplique por 9"};
+  function verboMargem(multi){
+    if (!isFinite(multi) || multi < 1.5) return "Multiplique";
+    return VERBOS[Math.round(multi)] || "Multiplique";
+  }
+
+  function rotuloFormato(formato){
+    if (formato === "digital") return "só plataforma";
+    if (formato === "misto")   return "digital e impresso";
+    return "plataforma + impressão";
+  }
+
+  // Mesma montagem serve ao gráfico principal e aos gráficos por segmento
+  function montarCenarios(f){
+    var custoTeachy = [
+      {valor:f.licenca,   cor:"#2F57D6", corTexto:"#FFFFFF"},
+      {valor:f.impressao, cor:"#A8BCF8", corTexto:"#14265E"}
+    ];
+    if (f.precoHoje > 0){
+      return [
+        {titulo:"Hoje", tituloCurto:"Hoje", detalhe:"material de sistema", total:f.precoHoje,
+         partes:[{valor:f.custo, cor:"#8C96F2", corTexto:"#FFFFFF"},
+                 {valor:Math.max(f.precoHoje - f.custo, 0), hachura:true, corTexto:"#27706B"}]},
+        {titulo:"Com material próprio", tituloCurto:"Material próprio",
+         detalhe:rotuloFormato(f.formato), total:f.precoNovo,
+         partes:custoTeachy.concat([
+           {valor:Math.max(f.precoNovo - f.teachy, 0), hachura:true, corTexto:"#27706B"}])}
+      ];
+    }
+    return [
+      {titulo:"Hoje", tituloCurto:"Hoje", detalhe:"material de sistema", total:f.custo,
+       partes:[{valor:f.custo, cor:"#8C96F2", corTexto:"#FFFFFF"}]},
+      {titulo:"Com material próprio", tituloCurto:"Material próprio",
+       detalhe:rotuloFormato(f.formato), total:f.teachy, partes:custoTeachy}
+    ];
+  }
+
+  /* ---------- Render ---------- */
+  function render(){
+    SEGMENTOS.forEach(function(seg){
+      var ligado = $("on-" + seg.id).checked;
+      $("card-" + seg.id).classList.toggle("desligado", !ligado);
+
+      var ref = referenciaDe(seg.id);
+      var material = materialPorId($("m-" + seg.id).value);
+      $("ref-" + seg.id).textContent = ref === null
+        ? "Valor informado pela escola"
+        : "Referência " + material.nome + ": " + moeda.format(ref);
+      $("chip-" + seg.id).hidden = !ajustado[seg.id];
+      $("reset-" + seg.id).hidden = !(ajustado[seg.id] && ref !== null);
+      // mostra o custo que está de fato em uso, não a referência de tabela
+      $("reftab-" + seg.id).textContent = moeda.format(numeroDe($("c-" + seg.id), 0)) +
+        (ajustado[seg.id] ? " *" : "");
+
+      $("mini-" + seg.id).disabled = !ligado;
+
+      var ehDigital = $("f-" + seg.id).value === "digital";
+      ["pg-","pag-","capa-","vol-","ver-"].forEach(function(p){ $(p + seg.id).disabled = ehDigital; });
+      // o seletor espelha a paginação, então editar páginas à mão cai em "personalizada"
+      $("ver-" + seg.id).value = versaoDe(seg.id);
+
+      var d = dadosSegmento(seg.id);
+      $("custo-" + seg.id).textContent = ehDigital
+        ? "Só plataforma: " + moeda.format(d.teachy) + " por aluno/ano"
+        : moeda.format(d.miolo) + " de miolo + " + moeda.format(d.capas) + " de capas · total " +
+          moeda.format(d.teachy) + " por aluno/ano";
+    });
+
+    atualizarPrincipal();
+
+    var ativos = segmentosAtivos();
+    var dados = ativos.map(function(s){ return dadosSegmento(s.id); });
+    var temSegmento = dados.length > 0;
+
+    $("aviso-segmento").classList.toggle("ativo", !temSegmento);
+    $("grafico").hidden = !temSegmento;
+    $("grafico-vazio").hidden = temSegmento;
+    $("legenda").hidden = !temSegmento;
+    $("saida-escola").textContent = $("f-escola").value.trim() || "Sua escola";
+
+    if (!temSegmento){
+      $("bloco-impacto").hidden = true;
+      $("bloco-minis").hidden = true;
+      $("margem-lado").hidden = true;
+      $("saida-nota").textContent = "";
+      $("saida-subtitulo").textContent = "";
+      ["saida-multi","saida-custo-de","saida-custo-para","saida-custo-chip"].forEach(function(id){
+        $(id).textContent = "—";
+      });
+      return;
+    }
+
+    var modo = $("f-principal").value;
+    var agregado = agregar(dados);
+    var fonte = modo === "media" ? agregado : dados.filter(function(d){ return d.id === modo; })[0];
+
+    var temPreco = fonte.precoHoje > 0;
+    $("aviso-preco").classList.toggle("ativo", !temPreco);
+
+    $("saida-grafico-nota").textContent = (modo === "media"
+      ? ativos.map(function(s){ return s.curto; }).join(" + ") + " · média por aluno/ano"
+      : fonte.nome + " · por aluno/ano");
+
+    // Gráfico: o que a família paga, dividido entre custo e margem
+    var margemHoje = fonte.precoHoje - fonte.custo;
+    var margemNova = fonte.precoNovo - fonte.teachy;
+    var cenarios = montarCenarios(fonte);
+    desenharGrafico($("grafico"), cenarios);
+    desenharLegenda(fonte.impressao > 0, temPreco);
+
+    // Gráficos por segmento, ao final da peça
+    var hostMinis = $("bloco-minis");
+    hostMinis.innerHTML = "";
+    var paraMini = dados.filter(function(d){ return $("mini-" + d.id).checked && d.id !== modo; });
+    hostMinis.hidden = paraMini.length === 0;
+    paraMini.forEach(function(d){
+      var div = document.createElement("div");
+      div.className = "mini";
+      var h4 = document.createElement("h4");
+      h4.textContent = d.nome;
+      var nota = document.createElement("p");
+      nota.className = "mini-nota";
+      var mH = d.precoHoje - d.custo, mN = d.precoNovo - d.teachy;
+      var multiSeg = mH > 0 ? mN / mH : 0;
+      nota.textContent = (d.alunos > 0 ? numero.format(d.alunos) + " alunos" : "por aluno/ano") +
+        (multiSeg >= 1.05 ? " · " + multiSeg.toFixed(1).replace(".", ",") + "x a margem" : "");
+      var svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("role", "img");
+      div.appendChild(h4); div.appendChild(nota); div.appendChild(svg);
+      hostMinis.appendChild(div);
+      desenharGrafico(svg, montarCenarios(d), true);
+    });
+
+    // De → para do custo
+    $("saida-custo-de").textContent = moeda.format(fonte.custo);
+    $("saida-custo-para").textContent = moeda.format(fonte.teachy);
+    var vezesCusto = fonte.teachy > 0 ? fonte.custo / fonte.teachy : 0;
+    $("saida-custo-chip").textContent = vezesCusto >= 1.1
+      ? vezesCusto.toFixed(1).replace(".", ",") + "x menor"
+      : (fonte.custo > fonte.teachy
+          ? moeda.format(fonte.custo - fonte.teachy) + " a menos"
+          : "custo equivalente");
+
+    // Tabela e totais
+    var corpo = $("corpo-impacto"), rodape = $("rodape-impacto");
+    corpo.innerHTML = ""; rodape.innerHTML = "";
+    var totalAlunos = 0, receitaHoje = 0, receitaNova = 0, algumAjustado = false, algumSubiu = false;
+
+    dados.forEach(function(d){
+      if (d.ajustado) algumAjustado = true;
+      if (d.subiuPreco) algumSubiu = true;
+      if (d.alunos <= 0 || d.precoHoje <= 0) return;
+      var mHoje = (d.precoHoje - d.custo) * d.alunos;
+      var mNova = (d.precoNovo - d.teachy) * d.alunos;
+      totalAlunos += d.alunos;
+      receitaHoje += mHoje;
+      receitaNova += mNova;
+
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.setAttribute("scope","row");
+      th.textContent = d.nome + (d.ajustado ? " *" : "");
+      tr.appendChild(th);
+      [numero.format(d.alunos), moeda.format(mHoje), moeda.format(mNova),
+       (mNova - mHoje >= 0 ? "+ " : "") + moeda.format(mNova - mHoje)].forEach(function(v){
+        var td = document.createElement("td");
+        td.textContent = v;
+        tr.appendChild(td);
+      });
+      corpo.appendChild(tr);
+    });
+
+    var temVolume = totalAlunos > 0;
+    // com os gráficos por segmento ligados a tabela vira repetição e custa página
+    var mostrarTabela = temVolume && paraMini.length === 0;
+    $("bloco-impacto").hidden = !mostrarTabela;
+    if (mostrarTabela){
+      var tr2 = document.createElement("tr");
+      var tdR = document.createElement("td"); tdR.textContent = "Total"; tr2.appendChild(tdR);
+      var tdA = document.createElement("td"); tdA.textContent = numero.format(totalAlunos); tr2.appendChild(tdA);
+      var tdH = document.createElement("td"); tdH.textContent = moeda.format(receitaHoje); tr2.appendChild(tdH);
+      var tdN = document.createElement("td"); tdN.textContent = moeda.format(receitaNova); tr2.appendChild(tdN);
+      var tdG = document.createElement("td");
+      tdG.className = "total";
+      tdG.textContent = (receitaNova - receitaHoje >= 0 ? "+ " : "") + moeda.format(receitaNova - receitaHoje);
+      tr2.appendChild(tdG);
+      rodape.appendChild(tr2);
+    }
+
+    // Faixa da margem — o múltiplo é a tese da peça
+    var multi = margemHoje > 0 ? margemNova / margemHoje : 0;
+    if (temPreco && margemHoje > 0 && multi >= 1.05){
+      $("saida-multi").textContent = multi.toFixed(1).replace(".", ",") + "x";
+      $("saida-multi-legenda").textContent = "a margem de hoje";
+    } else if (temPreco && margemHoje <= 0 && margemNova > 0){
+      $("saida-multi").textContent = moeda.format(margemNova);
+      $("saida-multi-legenda").textContent = "de margem onde hoje não há";
+    } else {
+      $("saida-multi").textContent = temPreco ? moeda.format(margemNova) : moeda.format(fonte.custo - fonte.teachy);
+      $("saida-multi-legenda").textContent = temPreco ? "de margem por aluno" : "a menos por aluno";
+    }
+
+    if (temVolume && temPreco){
+      $("saida-margem-hoje").textContent = moeda.format(receitaHoje);
+      $("saida-margem-depois-rotulo").textContent = "Com material próprio";
+      $("saida-margem-depois").textContent = moeda.format(receitaNova);
+      $("margem-lado").hidden = false;
+    } else {
+      $("margem-lado").hidden = true;
+    }
+
+    // Títulos
+    $("saida-titulo").innerHTML =
+      (temPreco && margemHoje > 0 ? verboMargem(multi) + " a margem" : "Baixe o custo") +
+      " da sua escola com <em>material próprio</em>.";
+
+    // Nada de afirmar que a família continua pagando o mesmo: o preço é decisão da escola.
+    var pilares = "<strong>Conteúdo pedagógico personalizado</strong>, " +
+                  "<strong>liberdade para decidir o que vai impresso</strong> e " +
+                  "<strong>autonomia para definir o preço das famílias</strong>.";
+    var fecho;
+    if (!temPreco){
+      fecho = " E o custo do material por aluno cai de " + moeda.format(fonte.custo) +
+              " para " + moeda.format(fonte.teachy) + " no ano.";
+    } else {
+      // "só na troca do material" só vale quando o preço às famílias não mudou
+      fecho = (fonte.subiuPreco ? " A margem" : " Só na troca do material, a margem") +
+              " por aluno sai de " + moeda.format(Math.max(margemHoje,0)) +
+              " para " + moeda.format(Math.max(margemNova,0)) + " no ano.";
+    }
+    $("saida-subtitulo").innerHTML = pilares + fecho;
+
+    // Quadro de escolha: mesmo material, quanto dele vai para o papel
+    // Cada opção é calculada segmento a segmento com o preço e a paginação daquele
+    // segmento, e só então ponderada. Partir da média agregada daria número errado
+    // sempre que os segmentos tivessem formatos ou custos de página diferentes.
+    var lista = (modo === "media") ? dados : [fonte];
+    var somaAlunos = lista.reduce(function(s,d){ return s + d.alunos; }, 0);
+    function medio(fn){
+      return lista.reduce(function(s,d){
+        var peso = somaAlunos > 0 ? d.alunos / somaAlunos : 1 / lista.length;
+        return s + fn(d) * peso;
+      }, 0);
+    }
+
+    // As opções são versões reais do material — menos seções, menos páginas, menos
+    // custo — e não frações arbitrárias do volume total.
+    var opcoes = [{rotulo:"Só digital", nota:"nada impresso", imprime:false,
+                   paginasDe:function(){ return 0; }}];
+    VERSOES.slice().reverse().forEach(function(v){
+      opcoes.push({rotulo:"Impresso · " + v.rotulo, imprime:true,
+                   paginasDe:function(d){ return v.paginas[d.id]; }});
+    });
+
+    function custoDaOpcao(o){
+      return medio(function(d){
+        return d.licenca + o.paginasDe(d) * d.precoPagina + (o.imprime ? d.capasBrutas : 0);
+      });
+    }
+    function ehAtual(o){
+      return lista.every(function(d){ return Math.abs(d.paginas - o.paginasDe(d)) < 1; });
+    }
+
+    var tabela = $("tabela-escolha");
+    tabela.innerHTML = opcoes.map(function(o){
+      var paginas = medio(function(d){ return o.paginasDe(d); });
+      var atual = ehAtual(o);
+      return '<tr class="' + (atual ? "atual" : "") + '">' +
+        '<td class="opcao">' + o.rotulo +
+          (atual ? ' <span class="aqui">· cenário desta proposta</span>' : "") + "</td>" +
+        '<td class="pags">' + (paginas >= 1 ? numero.format(Math.round(paginas)) + " págs" : o.nota) + "</td>" +
+        '<td class="valor">' + moeda.format(custoDaOpcao(o)) + "</td></tr>";
+    }).join("");
+
+    $("saida-escolha-texto").textContent = lista.some(function(d){ return d.paginasBrutas > 0; })
+      ? "O material é da escola — conteúdo, identidade e formato. Imprimir é opcional: o custo acompanha exatamente o quanto ela decidir levar para o papel, e pode mudar a cada ano."
+      : "O material é da escola — conteúdo, identidade e formato. Neste cenário não há impressão: o custo é só o da plataforma.";
+
+    // Rodapé
+    var inep = $("f-inep").value.trim();
+    var faixa = function(pegar){
+      var vals = dados.map(pegar);
+      var min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+      return { unico: min === max,
+               texto: min === max ? moeda.format(min) : moeda.format(min) + " a " + moeda.format(max) };
+    };
+    var fL = faixa(function(d){ return d.licenca; });
+    var imprime = dados.some(function(d){ return d.formato !== "digital"; });
+    var fP = faixa(function(d){ return d.precoPagina; });
+    var fC = faixa(function(d){ return d.precoCapa; });
+
+    var notas = [
+      "Plataforma Teachy: " + (fL.unico ? "" : "de ") + fL.texto + " por aluno/ano.",
+      imprime ? ("Impressão estimada " + (fP.unico ? "em " : "de ") + fP.texto +
+        " por página de miolo mais " + (fC.unico ? "" : "de ") + fC.texto +
+        " por capa, sobre a paginação e o número de volumes definidos pela escola.") : "",
+      "Material atual: valores de referência de mercado praticados em 2025, reajustados em 10% para 2026, na média de cada segmento.",
+      algumSubiu ? "Preço proposto às famílias é hipótese da escola, não compromisso." : "",
+      algumAjustado ? "* custo informado pela escola." : "",
+      inep ? "Volumes conforme informado pela escola (INEP " + inep + ")." : ""
+    ].filter(Boolean);
+    $("saida-nota").textContent = notas.join(" ");
+  }
+
+  /* ---------- Sincronização do custo de referência ---------- */
+  function aplicarReferencia(segId){
+    var ref = referenciaDe(segId);
+    if (ref !== null){
+      $("c-" + segId).value = ref.toFixed(2);
+      ajustado[segId] = false;
+    } else {
+      ajustado[segId] = true;
+    }
+  }
+
+  SEGMENTOS.forEach(function(seg){
+    aplicarReferencia(seg.id);
+    $("m-" + seg.id).addEventListener("change", function(){ aplicarReferencia(seg.id); render(); });
+    $("c-" + seg.id).addEventListener("input", function(){ ajustado[seg.id] = true; render(); });
+    $("reset-" + seg.id).addEventListener("click", function(){ aplicarReferencia(seg.id); render(); });
+    ["on-","a-","ph-","pn-","f-","mens-","pag-","capa-","vol-","pg-","mini-"].forEach(function(prefixo){
+      var el = $(prefixo + seg.id);
+      el.addEventListener("input", render);
+      el.addEventListener("change", render);
+    });
+    $("ver-" + seg.id).addEventListener("change", function(){
+      for (var i = 0; i < VERSOES.length; i++){
+        if (VERSOES[i].id === this.value){ $("pg-" + seg.id).value = VERSOES[i].paginas[seg.id]; }
+      }
+      render();
+    });
+  });
+
+  $("btn-replicar").addEventListener("click", function(){
+    var base = SEGMENTOS[0].id;
+    SEGMENTOS.slice(1).forEach(function(seg){
+      ["f-","mens-","pag-","capa-"].forEach(function(p){ $(p + seg.id).value = $(p + base).value; });
+    });
+    render();
+  });
+
+  $("f-escola").addEventListener("input", render);
+  $("f-inep").addEventListener("input", render);
+  $("f-principal").addEventListener("change", render);
+
+  /* ---------- Logo ---------- */
+  $("f-logo").addEventListener("change", function(){
+    var arquivo = this.files && this.files[0];
+    if (!arquivo) return;
+    var leitor = new FileReader();
+    leitor.onload = function(e){
+      var img = $("logo-escola");
+      img.src = e.target.result;
+      img.alt = "Logo de " + ($("f-escola").value.trim() || "escola");
+      img.classList.add("ativo");
+      $("logo-status").classList.add("ativo");
+    };
+    leitor.readAsDataURL(arquivo);
+  });
+  $("btn-remover-logo").addEventListener("click", function(){
+    var img = $("logo-escola");
+    img.removeAttribute("src");
+    img.classList.remove("ativo");
+    $("f-logo").value = "";
+    $("logo-status").classList.remove("ativo");
+  });
+
+  /* ---------- Uma página só ---------- */
+  var LARGURA_PAGINA = 733, ALTURA_PAGINA = 1062;
+
+  function ajustarImpressao(){
+    var folha = document.querySelector(".folha");
+    var raiz = document.documentElement;
+    folha.classList.add("medindo");
+    var largura = LARGURA_PAGINA, escala = 1, altura = 0;
+    try {
+      for (var i = 0; i < 5; i++){
+        raiz.style.setProperty("--larg-impressao", largura + "px");
+        altura = folha.getBoundingClientRect().height;
+        if (!altura) break;
+        escala = Math.min(1, (ALTURA_PAGINA * 0.995) / altura);
+        var alvo = Math.min((LARGURA_PAGINA * 0.997) / escala, LARGURA_PAGINA * 2);
+        if (Math.abs(alvo - largura) < 2) break;
+        largura = alvo;
+      }
+    } finally {
+      folha.classList.remove("medindo");
+    }
+    if (!isFinite(altura) || altura <= 0) return;
+    if (!isFinite(escala) || escala <= 0) escala = 1;
+    raiz.style.setProperty("--larg-impressao", String(largura) + "px");
+    raiz.style.setProperty("--escala-impressao", String(escala));
+  }
+
+  function ajustarComSeguranca(){
+    try { ajustarImpressao(); } catch (e) { /* imprime mesmo assim */ }
+  }
+
+  window.addEventListener("beforeprint", ajustarComSeguranca);
+
+  // Quando o navegador ignora print() — caso dos iframes com sandbox — ele não lança
+  // erro, apenas não faz nada. O beforeprint deixa de disparar, e é por aí que dá
+  // para saber que falhou em vez de deixar o botão mudo.
+  $("btn-pdf").addEventListener("click", function(){
+    ajustarComSeguranca();
+    var disparou = false;
+    var marcar = function(){ disparou = true; };
+    window.addEventListener("beforeprint", marcar);
+    try { window.print(); } catch (e) { /* tratado abaixo */ }
+    window.removeEventListener("beforeprint", marcar);
+    $("aviso-impressao").classList.toggle("ativo", !disparou);
+  });
+
+  $("btn-limpar").addEventListener("click", function(){
+    $("f-escola").value = "";
+    $("f-inep").value = "";
+    SEGMENTOS.forEach(function(seg){
+      $("ph-" + seg.id).value = "";
+      $("pn-" + seg.id).value = "";
+      $("a-" + seg.id).value = "";
+    });
+    $("btn-remover-logo").click();
+    render();
+  });
+
+  render();
+})();
+</script>
