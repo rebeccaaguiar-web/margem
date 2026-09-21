@@ -413,6 +413,8 @@
      paginas:{EFAI:1013, EFAF:1888, EM:3352}}
   ];
   var PAGINAS_REF = VERSOES[0].paginas;
+  // Cenário padrão da proposta: impresso sem a subseção de exercícios.
+  var VERSAO_PADRAO = VERSOES[1];
 
   var MATERIAIS = [
     {id:"bernoulli", nome:"Bernoulli",   v:{EFAI:663.96,  EFAF:814.00,  EM:990.00}},
@@ -575,7 +577,7 @@
               '</div>' +
               '<div class="largo">' +
                 '<label for="pg-' + seg.id + '">Páginas do material</label>' +
-                '<input type="number" id="pg-' + seg.id + '" min="0" step="10" value="' + PAGINAS_REF[seg.id] + '">' +
+                '<input type="number" id="pg-' + seg.id + '" min="0" step="10" value="' + VERSAO_PADRAO.paginas[seg.id] + '">' +
                 '<span class="dica" id="custo-' + seg.id + '"></span>' +
               '</div>' +
             '</div>' +
